@@ -181,6 +181,10 @@ static inline uint32_t nsec_of_cpu_ticks(uint32_t cpu_ticks) {
   return cpu_ticks / (sys_time.cpu_ticks_per_sec / 1000000) / 1000;
 }
 
+static inline int32_t signed_usec_of_cpu_ticks(int32_t cpu_ticks) {
+  return cpu_ticks / ((int32_t)sys_time.cpu_ticks_per_sec / 1000000);
+}
+
 
 
 #define USEC_OF_SEC(sec) ((sec) * 1e6)
