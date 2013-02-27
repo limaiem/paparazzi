@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2009 Antoine Drouin <poinix@gmail.com>
+ * Copyright (C) 2012 The Paparazzi Team
  *
  * This file is part of paparazzi.
  *
@@ -19,47 +19,53 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <inttypes.h>
-
 #include "std.h"
 #include "mcu.h"
-#include "mcu_periph/uart.h"
-#include "mcu_periph/sys_time.h"
 #include "led.h"
+#include "mcu_periph/sys_time.h"
 
-static inline void main_init( void );
-static inline void main_periodic_task( void );
-static inline void main_event_task( void );
+static inline void main_periodic_1(void);
+static inline void main_periodic_15(void);
+static inline void main_periodic_05(uint8_t id);
 
-int main( void ) {
-  main_init();
+int main(void) {
+
+  mcu_init();
+  sys_time_register_timer(0.5, main_periodic_05);
+
   while(1) {
-    if (sys_time_check_and_ack_timer(0))
-      main_periodic_task();
-    main_event_task();
+    /* sleep for 1s */
+    sys_time_usleep(1000000);
+    main_periodic_1();
+
+    /* sleep for 0.5s */
+    sys_time_usleep(500000);
+    main_periodic_15();
   }
+
   return 0;
 }
 
-static inline void main_init( void ) {
-  mcu_init();
-  sys_time_register_timer((1./PERIODIC_FREQUENCY), NULL);
+/*
+ * Called from main loop polling
+ */
+static inline void main_periodic_1(void) {
+#ifdef LED_GREEN
+      LED_TOGGLE(LED_GREEN);
+#endif
 }
 
-static inline void main_periodic_task( void ) {
-  RunOnceEvery(100, {
-    LED_TOGGLE(4);
-    LED_PERIODIC();
-  });
-
+static inline void main_periodic_15(void) {
+#ifdef LED_BLUE
+      LED_TOGGLE(LED_BLUE);
+#endif
 }
 
-static inline void main_event_task( void ) {
-
-  if (uart_char_available(&uart2))
-    uart_transmit(&uart1, uart_getch(&uart2));
-
-  if (uart_char_available(&uart1))
-    uart_transmit(&uart2, uart_getch(&uart1));
-
+/*
+ * Called from the systime interrupt handler
+ */
+static inline void main_periodic_05(uint8_t id) {
+#ifdef LED_RED
+      LED_TOGGLE(LED_RED);
+#endif
 }

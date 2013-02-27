@@ -69,7 +69,7 @@ struct GpsState {
   struct NedCoor_i ned_vel;      ///< speed NED in cm/s
   int16_t gspeed;                ///< norm of 2d ground speed in cm/s
   int16_t speed_3d;              ///< norm of 3d speed in cm/s
-  int32_t course;                ///< GPS heading in rad*1e7 (CW/north)
+  int32_t course;                ///< GPS course over ground in rad*1e7 (CW/north)
   uint32_t pacc;                 ///< position accuracy in cm
   uint32_t sacc;                 ///< speed accuracy in cm/s
   uint32_t cacc;                 ///< course accuracy in rad*1e7
@@ -135,7 +135,7 @@ extern struct GpsTimeSync gps_time_sync;
 
 /**
  * Convert time in sys_time ticks to GPS time of week.
- * The resolution depends on #SYS_TIME_RESOLUTION
+ * The resolution is sys_time.resolution
  * @return GPS tow in ms
  */
 extern uint32_t gps_tow_from_sys_ticks(uint32_t sys_ticks);
